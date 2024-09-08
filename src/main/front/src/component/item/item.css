@@ -1,0 +1,18 @@
+.item-container {
+    margin-left: 10px;
+    margin-bottom: 10px;
+}
+
+.item-name {
+    font-weight: bold;
+}
+
+.item-body video {
+    width: 500px;
+    height: 300px;
+}
+
+.item-thumbnail {
+    max-width: 100px;
+    max-height: 55px;
+}

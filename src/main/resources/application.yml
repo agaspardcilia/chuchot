@@ -1,0 +1,20 @@
+spring.application.name: Chuchot
+logging:
+  level:
+    fr.agaspardcilia.chuchot:
+      job: TRACE
+#      shared: TRACE
+
+app:
+  cors-configuration:
+    allowed-origin-patterns: 'http://localhost:3000'
+    allowed-methods: '*'
+    allowed-headers: '*'
+    exposed-headers: 'Authorization,Link,X-Total-Count'
+    allow-credentials: true
+    max-age: 1800
+
+  store: /Users/alexandre/tmp
+  model-directory: /Users/alexandre/tmp/models
+  output-directory: /Users/alexandre/tmp/outputs
+  base-uri: http://localhost:8080/api

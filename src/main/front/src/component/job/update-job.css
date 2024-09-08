@@ -1,0 +1,27 @@
+form {
+    display: inline-block;
+
+    margin: 15px;
+}
+
+.input-element {
+    margin-bottom: 10px;
+}
+
+.input-element label {
+    display: inline-block;
+    width: 100px;
+}
+
+.input-element input {
+    width: 196px; /* Adds 4 pixels for some reason */
+}
+
+.input-element select {
+    width: 200px;
+}
+
+.submit-element {
+    margin-top: 10px;
+    float: right;
+}
