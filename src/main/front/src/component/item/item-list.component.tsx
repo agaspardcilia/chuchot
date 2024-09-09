@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useItemStore } from '../../shared/store/item-store.store';
 import { Item } from '../../shared/model/item.model';
 import { ItemComponent } from './item.component';
+import { ItemUploadComponent } from './item-upload.component';
 
 interface ItemListProps {
     jobId?: string;
@@ -28,11 +29,18 @@ export const ItemListComponent: React.FC<ItemListProps> = ({ jobId, playable, sh
         }
     }
 
-    return <div>
-        {itemStore.itemsLoading
-            ? 'Loading'
-            : (getItems() || [])
-                .map(i => <ItemComponent item={i} key={i.name} playable={playable} showPreview={showPreview}/>)
-        }
-    </div>;
+    return (
+        <div>
+            <div>
+                <ItemUploadComponent />
+            </div>
+            <div>
+                {itemStore.itemsLoading
+                    ? 'Loading'
+                    : (getItems() || [])
+                        .map(i => <ItemComponent item={i} key={i.name} playable={playable} showPreview={showPreview}/>)
+                }
+            </div>
+        </div>
+    );
 };

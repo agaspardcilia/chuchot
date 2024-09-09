@@ -1,4 +1,8 @@
-spring.application.name: Chuchot
+spring:
+  application.name: Chuchot
+  servlet. multipart:
+    max-file-size: 10GB
+    max-request-size: 10GB
 logging:
   level:
     fr.agaspardcilia.chuchot:

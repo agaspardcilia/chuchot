@@ -3,6 +3,10 @@ import { Item } from '../model/item.model';
 import { itemStoreStoreApi } from '../api/item-store.store.api';
 
 interface ItemStore {
+    uploadAccept?: string;
+    fetchUploadAccept: () => Promise<void>;
+    uploadItem: (item: File) => Promise<Item>;
+
     items: Item[];
     itemsLoading: boolean;
     fetchInventory: (silent?: boolean) => Promise<void>;
@@ -14,6 +18,24 @@ interface ItemStore {
 
 export const useItemStore = create<ItemStore>(
     (set, get) => ({
+        uploadAccept: undefined,
+        fetchUploadAccept: async () => {
+            const response = await itemStoreStoreApi.fetchAccept();
+            if (response.status === 'success') {
+                set({ uploadAccept: response.result.accept });
+            } else {
+                throw new Error('Failed to fetch inventory');
+            }
+        },
+        uploadItem: async (item: File) => {
+            const response = await itemStoreStoreApi.uploadItem(item);
+            if (response.status === 'success') {
+                return response.result;
+            } else {
+                throw new Error('Failed to fetch inventory');
+            }
+        },
+
         items: [],
         itemsLoading: false,
         fetchInventory: async (silent: boolean = false) => {
@@ -21,6 +43,8 @@ export const useItemStore = create<ItemStore>(
             const response = await itemStoreStoreApi.inventory();
             if (response.status === 'success') {
                 set({ items: response.result, itemsLoading: false });
+            } else {
+                throw new Error('Failed to fetch inventory');
             }
         },
 

@@ -1,23 +1,36 @@
 import { Result } from '../model/result.model';
 import { applicationEnv } from './env.util';
-import { localStorageUtil } from './local-storage.util';
 
 type MethodType = 'GET' | 'POST' | 'PUT' | 'DELETE';
+type BodyType = 'json' | 'form-data';
 const getPath = (path: string): string => applicationEnv.apiBasePath + path;
 
-console.log('Path', getPath(''));
+const performRequest = async <R>(path: string, method: MethodType, body: any, bodyType: BodyType = 'json'): Promise<Result<R>> => {
+    let actualBody;
+    switch (bodyType) {
+        case 'json':
+            actualBody = body && JSON.stringify(body);
+            break;
+        case 'form-data':
+        default:
+            actualBody = body;
+            break;
+    }
 
-const performRequest = async <R>(path: string, method: MethodType, body: any): Promise<Result<R>> => {
+    let headers;
+    if (bodyType === 'form-data') {
+        headers = {};
+    } else {
+        headers = {'Content-type': 'application/json;charset=UTF-8'};
+    }
+
     const response = await fetch(
         getPath(path),
         {
             method: method,
             mode: 'cors',
-            headers: {
-                'Content-type': 'application/json;charset=UTF-8',
-                'Authorization': `Bearer ${localStorageUtil.read('jwt')}`
-            },
-            body: body ? JSON.stringify(body) : undefined
+            headers,
+            body: actualBody
         }
     );
 
@@ -34,14 +47,13 @@ const performRequest = async <R>(path: string, method: MethodType, body: any): P
             result: responseBody
         };
     } else {
-        // TODO: add some toasting there so I don't have to deal with errors.
         return { status: 'failure', ...responseBody };
     }
 };
 
 const performGet = async <R>(path: string): Promise<Result<R>> => performRequest(path, 'GET', undefined);
 const performDelete = async <R>(path: string): Promise<Result<R>> => performRequest(path, 'DELETE', undefined);
-const performPost = async <R>(path: string, body: any = {}): Promise<Result<R>> => performRequest(path, 'POST', body);
+const performPost = async <R>(path: string, body: any = {}, bodyType: BodyType = 'json'): Promise<Result<R>> => performRequest(path, 'POST', body, bodyType);
 
 export const Http = {
     get: performGet,

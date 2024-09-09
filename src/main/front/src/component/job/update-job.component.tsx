@@ -38,14 +38,14 @@ export const UpdateJobComponent: React.FC<UpdateJobProps> = ({items, onSave}) =>
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
             <div className="input-element">
-                <label about="name">Name </label>
+                <label htmlFor="name">Name </label>
                 <input {...register('name', { required: true, maxLength: 64 })} />
                 {errors.item && <span>Invalid field</span>}
 
             </div>
 
             <div className="input-element">
-                <label about="item">File </label>
+                <label htmlFor="item">File </label>
                 <select {...register('item', { required: true })}>
                     <option value="" />
                     {items.map(i => (<option key={i.name} value={i.name}>{i.name}</option>))}
@@ -54,7 +54,7 @@ export const UpdateJobComponent: React.FC<UpdateJobProps> = ({items, onSave}) =>
             </div>
 
             <div className="input-element">
-                <label about="language">Language </label>
+                <label htmlFor="language">Language </label>
                 <select {...register('language')}>
                     <option value="ENGLISH">English</option>
                     <option value="FRENCH">French</option>
@@ -62,14 +62,14 @@ export const UpdateJobComponent: React.FC<UpdateJobProps> = ({items, onSave}) =>
             </div>
 
             <div className="input-element">
-                <label about="model">Model </label>
+                <label htmlFor="model">Model </label>
                 <select {...register('model')}>
                     <option value="TINY">Tiny</option>
                 </select>
             </div>
 
             <div className="input-element">
-                <label about="task">Task </label>
+                <label htmlFor="task">Task </label>
                 <select {...register('task')}>
                     <option value="TRANSCRIBE">Transcribe</option>
                 </select>

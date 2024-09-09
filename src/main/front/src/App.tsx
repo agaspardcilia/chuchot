@@ -4,11 +4,13 @@ import { Header } from './layout/header.component';
 import { Home } from './component/home.component';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
+import { Startup } from './startup.component';
 
 const App = (): ReactElement => {
     return (
         <>
-            <Header/>
+            <Startup />
+            <Header />
             <Home />
             <ToastContainer />
         </>

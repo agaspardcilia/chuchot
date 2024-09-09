@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -85,7 +84,7 @@ public class StoreController {
         }
     }
 
-    @PostMapping("/upload")
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ItemDescription> upload(@RequestParam MultipartFile file) {
         try {
             return ResponseEntity.ok(service.addItem(file.getBytes(), file.getName()));
@@ -93,5 +92,10 @@ public class StoreController {
             LOGGER.error("Failed to fetch inventory", e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping("/accept")
+    public UploadAccept getSupportedInputAccept() {
+        return StoreService.SUPPORTED_INPUT;
     }
 }

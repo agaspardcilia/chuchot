@@ -17,6 +17,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 @Service
 @Log4j2
 public class StoreService {
+    public static final UploadAccept SUPPORTED_INPUT = new UploadAccept("audio/mp3,audio/ogg,video/mp4,video/webm");
     private static final Set<String> INPUT_EXT = Set.of("mp3", "ogg", "mp4", "webm");
     private static final Set<String> OUTPUT_EXT = Set.of("srt", "tsv", "txt", "vtt", "json");
 
@@ -98,7 +99,7 @@ public class StoreService {
         }
     }
 
-    public String encodeName(String name) {
+    private String encodeName(String name) {
         return URLEncoder.encode(name, StandardCharsets.UTF_8);
     }
 }
