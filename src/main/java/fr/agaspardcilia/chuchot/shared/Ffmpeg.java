@@ -28,11 +28,8 @@ public class Ffmpeg {
 
         // TODO: should probably deal with errors.
         try {
-//            Process process = Runtime.getRuntime()
-//                    .exec(params.toArray(new String[0]));
-            Process process = new ProcessBuilder(params)
-                    .inheritIO()
-                    .start();
+            Process process = Runtime.getRuntime()
+                    .exec(params.toArray(new String[0]));
             process.waitFor(TIMEOUT.getSeconds(), TimeUnit.SECONDS);
         } catch (IOException | InterruptedException e) {
             log.error("Failed to generate thumbnail for {}", input.getFileName(), e);
@@ -42,26 +39,26 @@ public class Ffmpeg {
     public static int getDurationInSeconds(Path input) {
         List<String> params = List.of(
                 "ffprobe",
-                "-i", input.toAbsolutePath().toString(),
                 "-show_entries", "format=duration",
+                "-of", "csv",
                 "-v", "quiet",
-                "-of", "csv=\"p=0\""
+                "-i", input.toAbsolutePath().toString()
         );
+        String errorOutput = null;
         try {
             if (log.isTraceEnabled()) {
                 log.trace("Running '{}'", String.join(" ", params));
             }
-//            Process process = Runtime.getRuntime()
-//                    .exec(params.toArray(new String[0]));
             Process process = new ProcessBuilder(params)
-                    .inheritIO()
                     .start();
+
             process.waitFor(TIMEOUT.getSeconds(), TimeUnit.SECONDS);
             String runOutput = IOUtils.toString(process.getInputStream(), StandardCharsets.UTF_8);
-//            return Integer.parseInt(runOutput);
-            return 0;
+            errorOutput = IOUtils.toString(process.getInputStream(), StandardCharsets.UTF_8);
+            return (int) Double.parseDouble(runOutput.strip().replace("format,", ""));
         } catch (IOException | InterruptedException | NumberFormatException e) {
             log.error("Failed to get duration for {}", input.getFileName(), e);
+            log.error(errorOutput);
         }
 
         return -1;

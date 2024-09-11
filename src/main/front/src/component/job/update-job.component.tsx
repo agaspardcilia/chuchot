@@ -19,7 +19,7 @@ interface JobForm {
 }
 
 export const UpdateJobComponent: React.FC<UpdateJobProps> = ({items, onSave}) => {
-    const { register, handleSubmit, watch, formState: { errors } } = useForm<JobForm>();
+    const { register, handleSubmit, formState: { errors } } = useForm<JobForm>();
 
     const onSubmit: SubmitHandler<JobForm> = data => {
         const { name, task, model, language, item } = data;
