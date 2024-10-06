@@ -1,11 +1,11 @@
 package fr.agaspardcilia.chuchot.store.metadata;
 
-import fr.agaspardcilia.chuchot.shared.Ffmpeg;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.Set;
 import java.util.function.UnaryOperator;
 
@@ -29,7 +29,7 @@ public class MetaDataExtractor {
     }
 
 
-    public ItemMetaData extractMetaData(Path itemPath) {
+    ItemMetaData extractMetaData(Path itemPath) {
         if (!Files.isRegularFile(itemPath)) {
             log.warn("Unable to extract meta-data from {}: cannot open the file", itemPath.getFileName().toString());
             return NULL_METADATA;
@@ -62,13 +62,14 @@ public class MetaDataExtractor {
             String itemName = itemPath.getFileName().toString();
             String thumbnailFileName = itemName + "-thumbnail.jpg";
             Path thumbnailPath = itemPath.getParent().resolve(thumbnailFileName);
+            Duration duration = Ffmpeg.getDuration(itemPath);
             if (generateThumbnails && !Files.exists(thumbnailPath)) {
-                Ffmpeg.generateThumbnail(itemPath, thumbnailPath);
+                Ffmpeg.generateThumbnail(itemPath, duration, thumbnailPath);
             }
 
             return new VideoMetaData(
                     itemName,
-                    Ffmpeg.getDurationInSeconds(itemPath),
+                    duration != null ? duration.getSeconds() : null,
                     generateThumbnails ? linkGenerator.apply(thumbnailFileName) : null
             );
         }
@@ -84,9 +85,10 @@ public class MetaDataExtractor {
         @Override
         public ItemMetaData extractMetaData(Path itemPath) {
             String itemName = itemPath.getFileName().toString();
+            Duration duration = Ffmpeg.getDuration(itemPath);
             return new AudioMetaData(
                     itemName,
-                    Ffmpeg.getDurationInSeconds(itemPath)
+                    duration != null ? duration.getSeconds() : null
             );
         }
     }

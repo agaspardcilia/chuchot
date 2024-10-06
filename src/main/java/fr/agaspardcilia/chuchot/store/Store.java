@@ -2,8 +2,8 @@ package fr.agaspardcilia.chuchot.store;
 
 import fr.agaspardcilia.chuchot.store.metadata.ItemMetaData;
 import fr.agaspardcilia.chuchot.store.metadata.MetaDataExtractor;
+import fr.agaspardcilia.chuchot.store.metadata.MetaDataCache;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -28,15 +28,13 @@ public class Store {
     private final UnaryOperator<String> linkGenerator;
     private final Set<String> supportedExtensions;
 
-    private final MetaDataExtractor metaDataExtractor;
-
+    private final MetaDataCache metaDataCache;
 
     public Store(Path store, boolean generateThumbnails, UnaryOperator<String> linkGenerator, Set<String> supportedExtensions) {
         this.store = store;
         this.linkGenerator = linkGenerator;
         this.supportedExtensions = supportedExtensions;
-
-        this.metaDataExtractor = new MetaDataExtractor(linkGenerator, generateThumbnails);
+        this.metaDataCache = new MetaDataCache(new MetaDataExtractor(linkGenerator, generateThumbnails));
     }
 
     public List<ItemDescription> inventory() throws IOException {
@@ -93,7 +91,7 @@ public class Store {
         }
 
         String itemName = f.getName();
-        ItemMetaData itemMetaData = metaDataExtractor.extractMetaData(itemPath);
+        ItemMetaData itemMetaData = metaDataCache.get(itemPath);
 
         return new ItemDescription(
                 itemPath, linkGenerator.apply(itemName), itemMetaData, itemName, f.length(), creation, lastUpdated,
