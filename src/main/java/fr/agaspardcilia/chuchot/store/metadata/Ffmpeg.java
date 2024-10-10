@@ -1,5 +1,6 @@
 package fr.agaspardcilia.chuchot.store.metadata;
 
+import fr.agaspardcilia.chuchot.shared.FormatUtil;
 import fr.agaspardcilia.chuchot.shared.Precondition;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -21,7 +22,7 @@ public class Ffmpeg {
 
     public static void generateThumbnail(Path input, Duration sourceDuration, Path output) {
         Precondition.notNull(sourceDuration, "Source duration cannot be null");
-        String timeCode = formatTimeCode(sourceDuration.getSeconds() > 2 ? sourceDuration.getSeconds() / 2 : 0);
+        String timeCode = FormatUtil.formatTimeCode(sourceDuration.getSeconds() > 2 ? sourceDuration.getSeconds() / 2 : 0);
         List<String> params = List.of(
                 "ffmpeg",
                 "-i", input.toAbsolutePath().toString(),
@@ -70,9 +71,5 @@ public class Ffmpeg {
         }
 
         return null;
-    }
-
-    private static String formatTimeCode(long timeInSeconds) {
-        return "%02d:%02d:%02d".formatted(timeInSeconds/3600, (timeInSeconds%3600)/60, timeInSeconds%60);
     }
 }

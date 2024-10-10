@@ -1,5 +1,6 @@
 package fr.agaspardcilia.chuchot.store.metadata;
 
+import fr.agaspardcilia.chuchot.shared.FormatUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 
@@ -49,7 +50,6 @@ public class MetaDataExtractor {
         return NULL_METADATA;
     }
 
-
     private class VideoMetaDataExtractor implements Extractor {
         private static final Set<String> SUPPORTED_EXTENSIONS = java.util.Set.of("mp4", "webm");
         @Override
@@ -70,6 +70,7 @@ public class MetaDataExtractor {
             return new VideoMetaData(
                     itemName,
                     duration != null ? duration.getSeconds() : null,
+                    FormatUtil.formatTimeCode(duration),
                     generateThumbnails ? linkGenerator.apply(thumbnailFileName) : null
             );
         }
@@ -88,7 +89,8 @@ public class MetaDataExtractor {
             Duration duration = Ffmpeg.getDuration(itemPath);
             return new AudioMetaData(
                     itemName,
-                    duration != null ? duration.getSeconds() : null
+                    duration != null ? duration.getSeconds() : null,
+                    FormatUtil.formatTimeCode(duration)
             );
         }
     }

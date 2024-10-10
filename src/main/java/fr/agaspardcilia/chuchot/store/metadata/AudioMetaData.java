@@ -4,7 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public record AudioMetaData(
         String name,
-        Long duration
+        Long duration,
+        String formattedDuration
 ) implements ItemMetaData {
     @JsonProperty
     @Override

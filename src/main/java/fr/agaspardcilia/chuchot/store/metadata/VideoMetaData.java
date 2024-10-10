@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public record VideoMetaData(
         String name,
         Long duration,
+        String formattedDuration,
         String thumbnailLink
 ) implements ItemMetaData {
     @JsonProperty

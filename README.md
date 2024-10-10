@@ -14,3 +14,6 @@ For a manual install, make sure both ffmpeg and whisper are installed.
 - [ ] Fix double request made on startup for fetching upload accept in front.
 - [ ] Deal with upload with name already in store.
 - [ ] Need to add a spinner to upload.
+- [ ] Fix UI job logging.
+- [ ] Fix test setup for backend
+- [ ] Should add expiration to meta-data cache
