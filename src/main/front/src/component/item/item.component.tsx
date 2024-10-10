@@ -9,7 +9,7 @@ interface ItemProps {
 }
 
 export const ItemComponent: React.FC<ItemProps> = ({ item, showPreview, playable }: ItemProps) => {
-    const [playerOpened, setPlayerOpen] = useState<boolean>(false);
+    const [playerOpened, setPlayerOpened] = useState<boolean>(false);
 
     const getItemSize = (): string => {
         const { size } = item;
@@ -20,46 +20,81 @@ export const ItemComponent: React.FC<ItemProps> = ({ item, showPreview, playable
         } else {
             return `${Math.trunc(item.size / 1000)}Kb`;
         }
-
-
     };
 
-    const getHeaderContent = () => {
+    const getIcon = () => {
         const { metaData } = item;
-      switch (metaData.type) {
-          case "VIDEO":
-              return (<>
-                  <img className="item-thumbnail" src={metaData.thumbnailLink} alt={`${item.name} Thumbnail`}/>
-                  {' '}
-                  <span className="item-name">{item.name}</span> ({getItemSize()})
-              </>);
-          case "OTHER":
-          case "AUDIO":
-          case "Text":
-              return (<>📄 <span className="item-name">{item.name}</span> ({getItemSize()})</>);
-      }
+        switch (metaData.type) {
+            case 'VIDEO':
+                if (playerOpened) {
+                    return undefined;
+                }
+                return (
+                    <button onClick={() => setPlayerOpened(true)}>
+                        <img className="item-thumbnail pointer"
+                             src={metaData.thumbnailLink}
+                             alt={`${item.name} Thumbnail`}/>
+                    </button>
+                );
+            case 'OTHER':
+            case 'AUDIO':
+            case 'TEXT':
+                return '📄';
+        }
     };
 
-    return (
-        <div className="item-container">
-            <div className="item-header" title={`Created on: ${item.creation}\nLast updated on: ${item.lastUpdated}`}>
-                {getHeaderContent()}
-                <br />
+    const getItemTitle = () => {
+        const { metaData } = item;
+        switch (metaData.type) {
+            case 'AUDIO':
+            case 'VIDEO':
+                return (
+                    <>
+                        <span className="item-name">{item.name}</span>
+                        {' - '}
+                        <span title="hh:mm:ss">{metaData.formattedDuration}</span> ({getItemSize()})
+                    </>
+                );
+            case 'OTHER':
+            case 'TEXT':
+                return (<><span className="item-name">{item.name}</span> ({getItemSize()})</>);
+        }
+    };
+
+    const getControls = () => {
+        return (
+            <>
                 <a target="_blank" href={item.downloadLink}>📥</a>
                 {playable
                     ? <>
-                    {' '}
-                        <span className="pointer" onClick={() => setPlayerOpen((prev) => !prev)}>{playerOpened ? '[retract]' : '▶️'}</span>
+                        {' '}
+                        <a className="pointer"
+                           onClick={() => setPlayerOpened((prev) => !prev)}>
+                            {playerOpened ? '[retract]' : '▶️'}
+                        </a>
                     </>
                     : undefined
                 }
-            </div>
+            </>
+        );
+    }
+
+    return (
+        <div className="item-container">
+            <div className="item-icon">{getIcon()}</div>
             <div className="item-body">
-                {playerOpened
-                    ? (<video controls >
-                        <source src={item.downloadLink} />
-                    </video>)
-                    : undefined}
+                <div className="item-title">
+                    {getItemTitle()}
+                    {' '}
+                    {getControls()}
+                </div>
+                {playerOpened ? (
+                    <div className="item-video">
+                        <video controls>
+                            <source src={item.downloadLink}/>
+                        </video>
+                    </div>
+                ) : undefined}
             </div>
         </div>
     );
