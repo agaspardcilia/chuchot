@@ -1,13 +1,14 @@
 import React from 'react';
-import { JobDescription } from '../../shared/model/job.model';
+import { JobDescription } from '../../../shared/model/job.model';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { Item } from '../../shared/model/item.model';
+import { Item } from '../../../shared/model/item.model';
 import './update-job.css';
 
 interface UpdateJobProps {
     items: Item[];
     initialJob?: JobDescription;
     onSave: (description: JobDescription, id?: string) => void;
+    onCancel: () => void;
 }
 
 interface JobForm {
@@ -18,7 +19,7 @@ interface JobForm {
     task: string;
 }
 
-export const UpdateJobComponent: React.FC<UpdateJobProps> = ({items, onSave}) => {
+export const UpdateJobComponent: React.FC<UpdateJobProps> = ({ items, onSave, onCancel }) => {
     const { register, handleSubmit, formState: { errors } } = useForm<JobForm>();
 
     const onSubmit: SubmitHandler<JobForm> = data => {
@@ -47,7 +48,7 @@ export const UpdateJobComponent: React.FC<UpdateJobProps> = ({items, onSave}) =>
             <div className="input-element">
                 <label htmlFor="item">File </label>
                 <select {...register('item', { required: true })}>
-                    <option value="" />
+                    <option value=""/>
                     {items.map(i => (<option key={i.name} value={i.name}>{i.name}</option>))}
                 </select>
                 {errors.item && <span>Item cannot be empty!</span>}
@@ -75,8 +76,9 @@ export const UpdateJobComponent: React.FC<UpdateJobProps> = ({items, onSave}) =>
                 </select>
             </div>
             <div className="submit-element">
+                <button onClick={() => onCancel()}>Cancel</button>
                 <button type="submit">Create Job</button>
             </div>
         </form>
     );
-}
+};

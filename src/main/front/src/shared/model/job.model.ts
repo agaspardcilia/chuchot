@@ -2,8 +2,7 @@ export type JobStatus = 'READY' | 'PENDING' | 'IN_PROGRESS' | 'SUCCESS' | 'FAILU
 
 export interface JobReport {
      id: string;
-     name: string;
-     itemName: string;
+     description: JobDescription;
      creation: string;
      lastUpdate: string;
      status: JobStatus;

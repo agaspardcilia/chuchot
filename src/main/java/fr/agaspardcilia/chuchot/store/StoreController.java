@@ -72,9 +72,8 @@ public class StoreController {
             if (result == null) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
-
             return ResponseEntity.ok()
-                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .contentType(MediaType.TEXT_PLAIN)
                     .contentLength(result.contentLength())
                     .header("Content-Disposition", "attachment; filename=\"%s\"".formatted(name))
                     .body(result);

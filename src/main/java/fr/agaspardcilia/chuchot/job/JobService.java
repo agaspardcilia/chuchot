@@ -192,7 +192,7 @@ public class JobService {
         try {
             return jobs.values().stream()
                     .map(e -> JobReport.from(e, statuses.getOrDefault(e.getId(), JobStatus.READY)))
-                    .sorted(Comparator.comparing(JobReport::status).thenComparing(JobReport::itemName))
+                    .sorted(Comparator.comparing(JobReport::status).thenComparing(jr -> jr.description().name()))
                     .toList();
         } finally {
             lock.readLock().unlock();

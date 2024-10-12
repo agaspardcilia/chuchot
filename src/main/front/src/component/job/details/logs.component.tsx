@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useJobStore } from '../../shared/store/jobs.store';
+import { useJobStore } from '../../../shared/store/jobs.store';
 
 interface LogsProps {
     id: string;

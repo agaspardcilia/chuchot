@@ -8,9 +8,10 @@ interface ItemListProps {
     jobId?: string;
     showPreview?: boolean;
     playable?: boolean;
+    showUpload?: boolean;
 }
 
-export const ItemListComponent: React.FC<ItemListProps> = ({ jobId, playable, showPreview }) => {
+export const ItemListComponent: React.FC<ItemListProps> = ({ jobId, playable, showPreview, showUpload }) => {
     const itemStore = useItemStore();
 
     useEffect(() => {
@@ -31,9 +32,11 @@ export const ItemListComponent: React.FC<ItemListProps> = ({ jobId, playable, sh
 
     return (
         <div>
-            <div>
-                <ItemUploadComponent />
-            </div>
+            {showUpload ? (
+                <div>
+                    <ItemUploadComponent />
+                </div>
+            ) : undefined}
             <div>
                 {itemStore.itemsLoading
                     ? 'Loading'

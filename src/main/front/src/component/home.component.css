@@ -1,0 +1,17 @@
+.home-container {
+    display: flex;
+    align-items: flex-start;
+}
+
+.left-pane, .right-pane {
+    display: inline-block;
+    padding: 0 5px;
+}
+
+.left-pane {
+    width: 30%;
+}
+
+.right-pane {
+    width: 70%;
+}

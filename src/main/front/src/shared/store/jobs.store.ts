@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { JobDescription, JobLogs, JobReport } from '../model/job.model';
 import { jobApi } from '../api/jobs.api';
+import { tartine } from '../util/tartine';
 
 interface JobStore {
     jobs: JobReport[];
@@ -12,6 +13,8 @@ interface JobStore {
     delete: (id: string) => Promise<void>;
     fetchLogs: (id: string) => Promise<void>;
     getLogs: (id: string) => JobLogs;
+    selectedJob: JobReport | null;
+    setSelectedJob: (id: string) => void;
 }
 
 export const useJobStore = create<JobStore>(
@@ -71,6 +74,18 @@ export const useJobStore = create<JobStore>(
             } else {
                 return { logs: [], errorLogs: []};
             }
-        }
+        },
+
+        selectedJob: null,
+        setSelectedJob: (id: string) => {
+            const job = get().jobs
+                .find((j) => j.id === id);
+            if (!job) {
+                tartine.error(`No job to be found for id '${id}'`);
+                set({ selectedJob: null });
+            }
+
+            set({ selectedJob: job});
+        },
     })
 );

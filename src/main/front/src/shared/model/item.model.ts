@@ -14,6 +14,7 @@ interface VideoMetaData {
     type: 'VIDEO';
     name: string;
     duration: number;
+    formattedDuration: string;
     thumbnailLink: string;
 }
 
@@ -21,10 +22,11 @@ interface AudioMetaData {
     type: 'AUDIO';
     name: string;
     duration: number;
+    formattedDuration: string;
 }
 
 interface TextMetaData {
-    type: 'Text';
+    type: 'TEXT';
     name: string;
 }
 

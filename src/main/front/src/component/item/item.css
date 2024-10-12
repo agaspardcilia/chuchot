@@ -1,6 +1,19 @@
 .item-container {
     margin-left: 10px;
-    margin-bottom: 10px;
+    margin-top: 10px;
+    display: flex;
+    align-self: flex-start;
+}
+
+.item-icon  {
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.item-body {
+    display: inline-block;
+    top: 0;
+
 }
 
 .item-name {
