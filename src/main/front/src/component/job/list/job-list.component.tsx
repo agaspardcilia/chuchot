@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { UpdateJobComponent } from './update-job.component';
 import { JobDescription } from '../../../shared/model/job.model';
 import { useJobStore } from '../../../shared/store/jobs.store';
@@ -15,30 +15,13 @@ export const JobListComponent: React.FC = () => {
     const itemStore = useItemStore();
     const [mode, setMode] = useState<Mode>('list');
 
-    useEffect(() => {
-        const updateStores = (silent: boolean): void => {
-            itemStore.fetchInventory(silent);
-            jobStore.fetch(silent);
-        }
-        updateStores(false);
-        // TODO: not a fan of the interval, should find an alternative to busy pulling.
-        const interval = setInterval(() => {
-            updateStores(true);
-        }, 2000);
-        return () => {
-            clearInterval(interval);
-        };
-    }, []);
-
     const onSave = (description: JobDescription, id?: string) => {
         jobStore.update(description, id)
             .then(result => {
                 tartine.success(`Job created with success for ${result?.description.sourceItemName}`);
-                jobStore.fetch();
             })
             .catch(e => {
                 tartine.error('Failed to create job');
-                jobStore.fetch();
             });
     };
 

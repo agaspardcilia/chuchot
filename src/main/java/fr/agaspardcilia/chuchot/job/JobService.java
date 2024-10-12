@@ -4,14 +4,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.agaspardcilia.chuchot.job.exception.BadJobStateException;
 import fr.agaspardcilia.chuchot.job.exception.JobDuplicationException;
 import fr.agaspardcilia.chuchot.job.exception.JobNotFoundException;
+import fr.agaspardcilia.chuchot.properties.AppProperties;
+import fr.agaspardcilia.chuchot.shared.Precondition;
 import fr.agaspardcilia.chuchot.shared.whisper.WhisperParameters;
 import fr.agaspardcilia.chuchot.shared.whisper.Whisperer;
-import fr.agaspardcilia.chuchot.properties.AppProperties;
 import fr.agaspardcilia.chuchot.store.ItemDescription;
 import fr.agaspardcilia.chuchot.store.StoreService;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -28,6 +30,7 @@ import java.util.stream.Stream;
 @Slf4j
 @Component
 public class JobService {
+    private final ApplicationEventPublisher eventPublisher;
     private final ObjectMapper objectMapper;
     private final ReadWriteLock lock;
     private final Map<UUID, Job> jobs;
@@ -37,7 +40,8 @@ public class JobService {
     private final Path outputDir;
     private final StoreService storeService;
 
-    public JobService(AppProperties properties, ObjectMapper objectMapper, StoreService storeService) {
+    public JobService(ApplicationEventPublisher eventPublisher, AppProperties properties, ObjectMapper objectMapper, StoreService storeService) {
+        this.eventPublisher = eventPublisher;
         this.objectMapper = objectMapper;
         this.storeService = storeService;
         this.lock = new ReentrantReadWriteLock();
@@ -77,6 +81,8 @@ public class JobService {
             job = new Job(id, name, sourceItem, parameters);
 
             jobs.put(job.getId(), job);
+            emitUpdate(job.getId());
+
             return JobReport.from(job, JobStatus.READY);
         } finally {
             lock.writeLock().unlock();
@@ -121,6 +127,7 @@ public class JobService {
             );
             whisperers.put(job.getId(), whisperer);
             whisperer.start(executor);
+            emitUpdate(job.getId());
         } finally {
             lock.writeLock().unlock();
         }
@@ -162,6 +169,7 @@ public class JobService {
             jobs.remove(id);
             whisperers.remove(id);
             statuses.remove(job.getId());
+            emitUpdate(job.getId());
         } finally {
             lock.writeLock().unlock();
         }
@@ -233,6 +241,7 @@ public class JobService {
             job.touch();
             statuses.put(job.getId(), status);
             writeJobMetaData(job, outputDir.resolve(job.getId().toString()));
+            emitUpdate(job.getId());
         } finally {
             lock.writeLock().unlock();
         }
@@ -272,5 +281,11 @@ public class JobService {
             log.error("Failed to read meta-data for file {}", metaDataPath.getFileName().toString(), e);
             return null;
         }
+    }
+
+    private void emitUpdate(UUID jobId)  {
+        Precondition.notNull(jobId);
+        log.debug("Emitting update for job {}", jobId);
+        eventPublisher.publishEvent(new JobEvent(jobId));
     }
 }

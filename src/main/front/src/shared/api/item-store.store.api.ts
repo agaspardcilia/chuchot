@@ -13,5 +13,10 @@ export const itemStoreStoreApi = {
         const formData = new FormData();
         formData.append('file', file);
         return Http.post(`${basePath}/upload`, formData, 'form-data');
-    }
+    },
+    subscribeToUpdates: (onMessage: (ev: MessageEvent) => any): EventSource => {
+        const eventSource = Http.sse(`${basePath}/sse/item-update`);
+        eventSource.onmessage = onMessage;
+        return eventSource;
+    },
 };

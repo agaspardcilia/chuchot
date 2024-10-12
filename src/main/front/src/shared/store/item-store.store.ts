@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { Item } from '../model/item.model';
 import { itemStoreStoreApi } from '../api/item-store.store.api';
+import { jobApi } from '../api/jobs.api';
 
 interface ItemStore {
     uploadAccept?: string;
@@ -14,6 +15,8 @@ interface ItemStore {
     jobItems: {[k in string]: Item[]};
     jobItemLoading: string[];
     fetchJobInventory: (jobId: string, silent?: boolean) => Promise<void>;
+
+    subscribeToUpdates: () => void;
 }
 
 export const useItemStore = create<ItemStore>(
@@ -60,6 +63,11 @@ export const useItemStore = create<ItemStore>(
 
                 set({ jobItems: { ...originalJobs, [jobId]: response.result }, jobItemLoading: updatedLoading });
             }
+        },
+        subscribeToUpdates: () => {
+            jobApi.subscribeToUpdates((event: MessageEvent<string>) => {
+                get().fetchJobInventory(event.data);
+            })
         }
     })
 );

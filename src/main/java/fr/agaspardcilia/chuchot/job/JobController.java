@@ -5,11 +5,12 @@ import fr.agaspardcilia.chuchot.job.exception.JobDuplicationException;
 import fr.agaspardcilia.chuchot.job.exception.JobNotFoundException;
 import fr.agaspardcilia.chuchot.store.ItemDescription;
 import fr.agaspardcilia.chuchot.store.StoreService;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 
 import java.io.IOException;
 import java.util.List;
@@ -18,10 +19,16 @@ import java.util.UUID;
 @Slf4j
 @RestController
 @RequestMapping("/api/job")
-@AllArgsConstructor
 public class JobController {
     private final JobService jobService;
     private final StoreService storeService;
+    private final Flux<JobEvent> events;
+
+    public JobController(JobService jobService, StoreService storeService, JobEventPublisher jobEventPublisher) {
+        this.jobService = jobService;
+        this.storeService = storeService;
+        this.events = jobEventPublisher.getSink();
+    }
 
     @PostMapping
     public ResponseEntity<JobReport> create(@RequestBody JobDescription description) {
@@ -53,6 +60,11 @@ public class JobController {
         } catch (JobDuplicationException e) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
+    }
+
+    @GetMapping(value = "/sse/job-update", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<String> getJobUpdateSse() {
+        return events.map(e -> e.getSource().toString());
     }
 
     @GetMapping("/all")

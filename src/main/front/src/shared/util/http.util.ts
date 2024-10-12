@@ -55,8 +55,11 @@ const performGet = async <R>(path: string): Promise<Result<R>> => performRequest
 const performDelete = async <R>(path: string): Promise<Result<R>> => performRequest(path, 'DELETE', undefined);
 const performPost = async <R>(path: string, body: any = {}, bodyType: BodyType = 'json'): Promise<Result<R>> => performRequest(path, 'POST', body, bodyType);
 
+const getEventSource = (path: string): EventSource => new EventSource(getPath(path));
+
 export const Http = {
     get: performGet,
     post: performPost,
     delete: performDelete,
+    sse: getEventSource
 };

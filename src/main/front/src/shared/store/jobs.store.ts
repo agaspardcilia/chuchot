@@ -15,6 +15,7 @@ interface JobStore {
     getLogs: (id: string) => JobLogs;
     selectedJob: JobReport | null;
     setSelectedJob: (id: string) => void;
+    subscribeToUpdates: () => void;
 }
 
 export const useJobStore = create<JobStore>(
@@ -87,5 +88,11 @@ export const useJobStore = create<JobStore>(
 
             set({ selectedJob: job});
         },
+        subscribeToUpdates: () => {
+            jobApi.subscribeToUpdates((event) => {
+                get().fetch(true);
+
+            })
+        }
     })
 );
