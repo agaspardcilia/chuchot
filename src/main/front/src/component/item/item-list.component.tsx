@@ -6,12 +6,10 @@ import { ItemUploadComponent } from './item-upload.component';
 
 interface ItemListProps {
     jobId?: string;
-    showPreview?: boolean;
-    playable?: boolean;
     showUpload?: boolean;
 }
 
-export const ItemListComponent: React.FC<ItemListProps> = ({ jobId, playable, showPreview, showUpload }) => {
+export const ItemListComponent: React.FC<ItemListProps> = ({ jobId, showUpload }) => {
     const itemStore = useItemStore();
 
     useEffect(() => {
@@ -41,7 +39,7 @@ export const ItemListComponent: React.FC<ItemListProps> = ({ jobId, playable, sh
                 {itemStore.itemsLoading
                     ? 'Loading'
                     : (getItems() || [])
-                        .map(i => <ItemComponent item={i} key={i.name} playable={playable} showPreview={showPreview}/>)
+                        .map(i => <ItemComponent item={i} key={i.name} />)
                 }
             </div>
         </div>

@@ -1,15 +1,35 @@
 import React, { useState } from 'react';
 import { Item } from '../../shared/model/item.model';
 import './item.css';
+import { VideoPreview } from './video-preview.component';
+import { useItemStore } from '../../shared/store/item-store.store';
+import { tartine } from '../../shared/util/tartine';
+import { PreviewState, TextPreview } from './text-preview.component';
 
 interface ItemProps {
     item: Item;
-    showPreview?: boolean;
-    playable?: boolean;
 }
 
-export const ItemComponent: React.FC<ItemProps> = ({ item, showPreview, playable }: ItemProps) => {
-    const [playerOpened, setPlayerOpened] = useState<boolean>(false);
+export const ItemComponent: React.FC<ItemProps> = ({ item }: ItemProps) => {
+    const { downloadItem } = useItemStore();
+    const [previewOpened, setPreviewOpened] = useState<boolean>(false);
+    const [previewState, setPreviewState] = useState<'none' | 'loading' | 'failed' | 'success'>('none');
+    const [previewContent, setPreviewContent] = useState<string>();
+
+    const onPreviewToggle = () => {
+        if (previewState === 'none') {
+            setPreviewState('loading');
+            downloadItem(item).then(res => {
+                setPreviewContent(res);
+                setPreviewState('success');
+            }).catch(err => {
+                tartine.error(`Failed to load preview for ${item.name}`);
+                setPreviewState('failed');
+                console.error(err);
+            });
+        }
+        setPreviewOpened(pred => !pred);
+    };
 
     const getItemSize = (): string => {
         const { size } = item;
@@ -22,15 +42,15 @@ export const ItemComponent: React.FC<ItemProps> = ({ item, showPreview, playable
         }
     };
 
-    const getIcon = () => {
+    const renderIcon = () => {
         const { metaData } = item;
         switch (metaData.type) {
             case 'VIDEO':
-                if (playerOpened) {
+                if (previewOpened) {
                     return undefined;
                 }
                 return (
-                    <button onClick={() => setPlayerOpened(true)}>
+                    <button onClick={() => setPreviewOpened(true)}>
                         <img className="item-thumbnail pointer"
                              src={metaData.thumbnailLink}
                              alt={`${item.name} Thumbnail`}/>
@@ -43,7 +63,7 @@ export const ItemComponent: React.FC<ItemProps> = ({ item, showPreview, playable
         }
     };
 
-    const getItemTitle = () => {
+    const renderItemTitle = () => {
         const { metaData } = item;
         switch (metaData.type) {
             case 'AUDIO':
@@ -61,40 +81,65 @@ export const ItemComponent: React.FC<ItemProps> = ({ item, showPreview, playable
         }
     };
 
-    const getControls = () => {
+    const renderPreview = () => {
+        if (!previewOpened) {
+            return undefined;
+        }
+
+        const { metaData } = item;
+        switch (metaData.type) {
+            case 'AUDIO':
+            case 'VIDEO':
+                return (
+                    <div className="item-video">
+                        <VideoPreview sourceItem={item}/>
+                    </div>
+                );
+            case 'OTHER':
+            case 'TEXT':
+                const getLocalState = (): PreviewState => {
+                    switch (previewState) {
+                        case 'failed':
+                            return 'failed';
+                        case 'loading':
+                            return 'loading';
+                        default:
+                            return 'none';
+                    }
+                };
+
+                return (
+                    <>
+                        <TextPreview content={previewContent} state={getLocalState()} />
+                    </>
+                );
+        }
+    };
+
+    const renderControls = () => {
         return (
             <>
                 <a target="_blank" href={item.downloadLink}>📥</a>
-                {playable
-                    ? <>
-                        {' '}
-                        <a className="pointer"
-                           onClick={() => setPlayerOpened((prev) => !prev)}>
-                            {playerOpened ? '[retract]' : '▶️'}
-                        </a>
-                    </>
-                    : undefined
-                }
+                {' '}
+                <a className="pointer"
+                   onClick={() => onPreviewToggle()}>
+                    {previewOpened ? '[retract]' : '[preview]'}
+                </a>
+
             </>
         );
     }
 
     return (
         <div className="item-container">
-            <div className="item-icon">{getIcon()}</div>
+            <div className="item-icon">{renderIcon()}</div>
             <div className="item-body">
                 <div className="item-title">
-                    {getItemTitle()}
+                    {renderItemTitle()}
                     {' '}
-                    {getControls()}
+                    {renderControls()}
                 </div>
-                {playerOpened ? (
-                    <div className="item-video">
-                        <video controls>
-                            <source src={item.downloadLink}/>
-                        </video>
-                    </div>
-                ) : undefined}
+                {renderPreview()}
             </div>
         </div>
     );

@@ -9,7 +9,7 @@ export const JobParameters: React.FC<JobParametersProps> = ({ parameters }) => {
     const { task, model, language } = parameters;
     return (
         <ul>
-            <li>Tak {task}</li>
+            <li>Task {task}</li>
             <li>Model {model}</li>
             <li>Language {language}</li>
         </ul>

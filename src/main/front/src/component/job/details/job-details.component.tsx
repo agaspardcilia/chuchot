@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { JobReport } from '../../../shared/model/job.model';
 import './job-details.component.css';
 import { ItemListComponent } from '../../item/item-list.component';
@@ -7,7 +7,7 @@ import { tartine } from '../../../shared/util/tartine';
 import { useJobStore } from '../../../shared/store/jobs.store';
 import { Collapsable } from '../../../layout/collapsable.component';
 import { JobParameters } from './element/job-parameters.component';
-import { JobPreview } from './element/job-preview.component';
+import { VideoPreview } from '../../item/video-preview.component';
 import { Item } from '../../../shared/model/item.model';
 
 interface JobDetailsProps {
@@ -48,6 +48,7 @@ export const JobDetails: React.FC<JobDetailsProps> = ({ job, sourceItem, jobOutp
     };
 
     const onCancel = (id: string): void => {
+        // TODO: implement me!
         console.log('cancel requested', id);
     };
 
@@ -56,9 +57,10 @@ export const JobDetails: React.FC<JobDetailsProps> = ({ job, sourceItem, jobOutp
             return <p>No source file to be found.</p>
         }
 
-        const subItem = (jobOutput || []).find(i => i.name.endsWith('.srt'));
+        const subItem = (jobOutput || []).find(i => i.name.endsWith('.vtt'));
+        const subtitles = subItem && { item: subItem, language: job.description.parameters.language }
         return (
-            <JobPreview job={job.description} sourceItem={sourceItem} subtitles={subItem} />
+            <VideoPreview sourceItem={sourceItem} subtitles={subtitles} />
         );
     };
 
@@ -88,7 +90,7 @@ export const JobDetails: React.FC<JobDetailsProps> = ({ job, sourceItem, jobOutp
                     {renderPreview()}
                 </Collapsable>
                 <Collapsable title="Result">
-                    TODO
+                    <ItemListComponent jobId={job.id} />
                 </Collapsable>
                 <div className={`details ${opened ? '' : 'hidden'}`}>
                     {/*{startedOnce && <Logs id={id}/>}*/}

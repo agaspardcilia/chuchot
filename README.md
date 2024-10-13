@@ -13,6 +13,7 @@ For a manual install, make sure both ffmpeg and whisper are installed.
 - [ ] Deal with upload with name already in store.
 - [ ] Need to add a spinner to upload.
 - [ ] Fix UI job logging.
-- [ ] Fix test setup for backend
-- [ ] Should add expiration to meta-data cache
-- [ ] Fix captions on preview
+- [ ] Fix test setup for backend.
+- [ ] Should add expiration to meta-data cache.
+- [ ] Fix captions on preview.
+- [ ] Style text preview.

@@ -15,6 +15,7 @@ interface ItemStore {
     jobItems: {[k in string]: Item[]};
     jobItemLoading: string[];
     fetchJobInventory: (jobId: string, silent?: boolean) => Promise<void>;
+    downloadItem: (item: Item) => Promise<string>;
 
     subscribeToUpdates: () => void;
 }
@@ -64,6 +65,15 @@ export const useItemStore = create<ItemStore>(
                 set({ jobItems: { ...originalJobs, [jobId]: response.result }, jobItemLoading: updatedLoading });
             }
         },
+        downloadItem: async (item: Item) => {
+            const result = await itemStoreStoreApi.downloadItem(item);
+            if (result.status === 'success') {
+                return result.result;
+            } else {
+                throw new Error(`Failed to retrieve ${item.name}`);
+            }
+        },
+
         subscribeToUpdates: () => {
             jobApi.subscribeToUpdates((event: MessageEvent<string>) => {
                 get().fetchJobInventory(event.data);
