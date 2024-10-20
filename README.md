@@ -15,5 +15,5 @@ For a manual install, make sure both ffmpeg and whisper are installed.
 - [ ] Fix UI job logging.
 - [ ] Fix test setup for backend.
 - [ ] Should add expiration to meta-data cache.
-- [ ] Fix captions on preview.
 - [ ] Style text preview.
+- [ ] Should switch back to job list when a new job is created.

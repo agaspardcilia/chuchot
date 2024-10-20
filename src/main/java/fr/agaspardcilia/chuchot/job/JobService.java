@@ -62,6 +62,7 @@ public class JobService {
         lock.writeLock().lock();
         try {
             Job job;
+            boolean updateMetaData = false;
             // ID is here, means that's an update.
             if (id != null) {
                 job = jobs.get(id);
@@ -77,10 +78,17 @@ public class JobService {
                 checkNameDuplication(name);
                 // Means new job, a new ID is required then.
                 id = UUID.randomUUID();
+                updateMetaData = true;
             }
             job = new Job(id, name, sourceItem, parameters);
 
             jobs.put(job.getId(), job);
+
+            // Makes sure the job is in the right initial state.
+            if (updateMetaData) {
+                updateStatus(job, JobStatus.READY);
+            }
+
             emitUpdate(job.getId());
 
             return JobReport.from(job, JobStatus.READY);
