@@ -131,7 +131,8 @@ public class JobService {
                     e -> {
                         log.error("Execution failed", e);
                         updateStatus(job, JobStatus.FAILURE);
-                    }
+                    },
+                    logEvent -> emitUpdate(job.getId())
             );
             whisperers.put(job.getId(), whisperer);
             whisperer.start(executor);
@@ -273,7 +274,10 @@ public class JobService {
                 ItemDescription item = storeService.getInputItem(metaData.itemName());
 
                 jobs.put(metaData.id(), new Job(metaData.id(), metaData.name(), item, metaData.parameters()));
-                statuses.put(metaData.id(), metaData.status());
+
+                // If the job was in progress, it means the server stopped mid job, it's an error.
+                var status = metaData.status() == JobStatus.IN_PROGRESS ? JobStatus.FAILURE : metaData.status();
+                statuses.put(metaData.id(), status);
             }
         } catch (IOException e) {
             log.error("Failed to retrieve existing jobs", e);

@@ -17,3 +17,4 @@ For a manual install, make sure both ffmpeg and whisper are installed.
 - [ ] Should add expiration to meta-data cache.
 - [ ] Style text preview.
 - [ ] Should switch back to job list when a new job is created.
+- [ ] Fix UI "start job" button
